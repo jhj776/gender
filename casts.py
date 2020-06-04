@@ -89,7 +89,14 @@ textsf.write ("Nlines	Nread	Nwords	Nactors	Nchars	Nextra	Nnonstandard	movie\n")
 ####################################
 # 2 input files:
 #
-# read list of filenames of input texts such as files with movie plots, newspaper articles, other texts.
+# genderwords.json a file of supplemental (corrected) names,titles,words each with assigned gender:
+# 	Queen, Princess, King, Prince, -- already in gender_guesser
+genderwords= open("genderwords.json").read()
+# genderwords is a long string, make genderwords into a dict, namegender:
+namegender= json.loads(genderwords)
+print  ('\nnamegender (names with fixed gender)= ' + str(type(namegender)) + ' Nlines=' + str(len(namegender)) )
+#
+# read list of filenames of input texts: all movies with cast lists
 infilelist= prefix + "files.txt"
 files=open(infilelist).read()
 # files is a long string with all file names:
@@ -99,17 +106,8 @@ Ntextfiles=len(textfiles)
 Sumtextlines=0
 # strip off end of file line:
 textfiles=textfiles[0:Ntextfiles-1]
-print ('\nList of text files to be analyzed: ' + infilelist + " " + str(type(textfiles)) + ", #files= " + str(len(textfiles)) + '\n')
-print       ('\ntext list: ' + infilelist + " " + str(type(textfiles)) + ", #files= " + str(len(textfiles)) + '\n')
-#textsf.write ('	text list: ' + infilelist + " " + str(type(textfiles)) + ", #files= " + str(len(textfiles)) + '\n')
+print ('\nList of cast files to be analyzed: ' + infilelist + " " + str(type(textfiles)) + ", #files= " + str(len(textfiles)) )
 #
-# read json file of supplemental (corrected) names and gender:
-# 	Queen, Princess, King, Prince, -- already in gender_guesser
-genderwords= open("genderwords.json").read()
-# genderwords is a long string, make genderwords into a dict, namegender:
-namegender= json.loads(genderwords)
-print  ('\nnamegender (names with fixed gender)= ' + str(type(namegender)) + ' Nlines=' + str(len(namegender)) )
-#outlog.write  ('\njoblabels (jobtitles mostly from Census+)= ' + str(type(joblabels)) + ' Nlines=' + str(len(joblabels)) )
 
 foundnames= ["given_name"]
 gendernames= ["unknown"]
@@ -122,6 +120,7 @@ countmfemales= [0]
 countfemales= [0]
 countandy= [0]
 countunknown= [0]
+Sumcharacters=0
 
 for file in textfiles:
 	Nactors=0
@@ -299,12 +298,12 @@ for file in textfiles:
 			#
 			# line is now separated into 3 parts: full actor name, full character name, additional words
 			#
-			# loop through the words in anames[] to find first gendered name or title (e.g. Mrs.)
-			actor= actor.replace('	',' ')	# rarely a tab separates words in names
+			# loop through the words in anames[] to find first gendered name (e.g., Mary), title (e.g. Mrs.), or word (e.g., mother)
+			actor= actor.replace('	',' ')	# rarely a tab separates words in names, but tabs cause problems so replace with a space
 			actor= actor.replace("'","")	# delete quotes around nicknames, e.g., 'Doc'
-			anames= actor.split(" ")	# this will separate some compound names
+			anames= actor.split(" ")	# this will unfortunately separate some compound names
 			if prefix=="SK":
-				anames= anames.reverse()
+				anames.reverse()
 			agender= "unknown"
 			for aname in anames:
 				# some common surnames in Korean are given names in English;
@@ -355,7 +354,7 @@ for file in textfiles:
 			cnames= char.split(" ")		# this will separate some compound names
 			cgender= "unknown"
 			if prefix=="SK":
-				cnames= cnames.reverse()
+				cnames.reverse()
 			for cname in cnames:
 				if prefix=="SK" and cname in notgivenname:
 					cgender= "unknown"
@@ -437,8 +436,9 @@ for file in textfiles:
 			charf.write (file + "	" + aname + "	" + actor + "	"  + agender + "	" + cname + "	" + char + "	" +cgender + "	" + additional + "\n")
 	textsf.write (str(Nlines) + "	" + str(iline) + "	" + str(Nwords) + "	" + str(Nactors) + "	" + str(Ncharacters) + "	" + str(Nadditional)+ "	" + str(Nnonstandard) + "	" + file + "\n")
 	print ("Nlines=" + str(Nlines) + "	iline=" + str(iline) + " 	#words=" + str(Nwords) + "	#actors=" + str(Nactors) + "	#characters=" + str(Ncharacters) + "	#w/extra=" + str(Nadditional)+ "	#nonstandard lines=" + str(Nnonstandard) + "	"+ file )
+	Sumcharacters= Sumcharacters+Ncharacters
 #totalsf.write ("\n# titles=" + str(Sumales) + "\n# files=" + str(len(textfiles)) + "\n# sentences=" + str(Sumsentences) + "\n# words=" + str(Sumwords) + "\n" )
-print ("# names=" + str(len(foundnames)))
+print ("# movies(files)=" + str(len(textfiles)))
 Sumnames= len(foundnames)
 for iname in range(Sumnames):
 	# pairscore is summary measure of whether the paired name (e.g. the character's when found name is the actor's) is female (negative scores=male)
@@ -458,10 +458,12 @@ for iname in range(Sumnames):
 		pctfemale=0
 	lineout= str(iname) +"	"+ foundnames[iname] +"	"+ gendernames[iname] +"	"+ str(countnames[iname]) +"	"+ str(countanames[iname]) +"	"+ str(countcnames[iname]) +"	"+ str(countfemales[iname]) +"	"+ str(countmfemales[iname]) +"	"+ str(countandy[iname]) +"	"+ str(countmmales[iname]) +"	"+ str(countmales[iname]) +"	"+ str(countunknown[iname]) + "	" + str(pairscore) + "\n" 
 	namesf.write (lineout)
-print ("\n# unique names=", str(len(foundnames)), "\n")
-print ("See XXnames.xls; sort on gender, pairscore to revise unknown and andy")
-print ("See XXnames.xls; sort on gender, pctmale or gender, pctfemale to check male&female errors")
+print ("\n# unique names=", str(len(foundnames)))
+xls= prefix+"names.xls;"
+print ("See", xls, "sort on gender, pairscore to revise unknown and andy")
+print ("See", xls, "sort on gender, pctmale or gender, pctfemale to check male&female errors\n")
 #
+print (str(Sumcharacters), "movie actor/character pairs out of", str(Sumtextlines), "lines in the", str(len(textfiles)), "cast files.")
 #	crosstabs of actor gender X character gender
 coltotal= [0,0,0,0,0,0,0]
 print ("\n 	character gender:")
@@ -480,9 +482,10 @@ for row in range(0,49,7):
 	print (rowlabel[rowint], str(xtab[row+0]), str(xtab[row+1]), str(xtab[row+2]), str(xtab[row+3]), str(xtab[row+4]), str(xtab[row+5]), str(xtab[row+6]), str(rowtotal), sep="	")
 total= coltotal[0] + coltotal[1] + coltotal[2] + coltotal[3] + coltotal[4] + coltotal[5] + coltotal[6]
 print ("\ntotals", str(coltotal[0]), str(coltotal[1]), str(coltotal[2]), str(coltotal[3]), str(coltotal[4]), str(coltotal[5]), str(coltotal[6]), str(total), sep="	")
-print ("\n", str(total), " movie actor/character pairs out of ", str(Sumtextlines), " lines in the ", str(Ntextfiles)," cast files.")
-print ("\nSee XXcharacters.xls for each movie character.")
-print ("	Sort by Cname Chgender Agender Aname (or by Aname Agender Cgender Cname) to identify misclassified names.")
+#
+xls= prefix+"characters.xls"
+print ("\nSee", xls, "for each movie character.")
+print ("	Sort by Cname Chgender Agender Aname (or by Aname Agender Chgender Cname) to identify misclassified names.")
 print ("\n	exiting...")
 sys.exit()
 
