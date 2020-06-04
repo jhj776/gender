@@ -8,26 +8,27 @@ Vanneman, Reeve. 2020.  "casts.py: A Python Program to Code Check Gender in Movi
 url: https://github.com/ReeveVanneman/gender Version 0.1.1.
 
 ## names
-casts.py uses two sources to determine gender of a name (or some words)
-	gendernames.json
-	gender_guesser
+casts.py uses two sources to determine gender of a name (or some words):
+- gendernames.json
+- gender_guesser
 It categorizes each name into:
-	female
-	mostly_female
-	andy (androgynous)
-	mostly_male
-	male
-	unknown (i.e., not found in either list)
+- female
+- mostly_female
+- andy (androgynous)
+- mostly_male
+- male
+- unknown (i.e., not found in either list)
 
 ## arguments  
 casts.py is called with one argument, a prefix for input and output files.  e.g., US, Fr, SK,
-	 python3 casts.py US
+. python3 casts.py US
+
 would look for a file USfiles.txt that lists all the files of cast lists from US movies
 It would also produce output files with the prefix US (USnames.xls, UScharacters.xls, etc.)
   
 ## compiling jobs.py:  
-jobs.py uses python standard packages: json sys  
-jobs.py also uses python packages that must be downloaded and installed: gender_guesser BeautifulSoup
+- jobs.py uses python standard packages: json sys  
+- jobs.py also uses python packages that must be downloaded and installed: gender_guesser BeautifulSoup
 
 ## input files:  
 - prefix+files.txt (e.g., USfiles.txt)  = a file of filenames of cast lists to be read 
