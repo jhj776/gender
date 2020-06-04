@@ -11,6 +11,7 @@ url: https://github.com/ReeveVanneman/gender Version 0.1.1.
 casts.py uses two sources to determine gender of a name (or some words):
 - gendernames.json
 - gender_guesser
+
 It categorizes each name into:
 - female
 - mostly_female
@@ -21,7 +22,7 @@ It categorizes each name into:
 
 ## arguments  
 casts.py is called with one argument, a prefix for input and output files.  e.g., US, Fr, SK,
-. python3 casts.py US
+- python3 casts.py US
 
 would look for a file USfiles.txt that lists all the files of cast lists from US movies
 It would also produce output files with the prefix US (USnames.xls, UScharacters.xls, etc.)
@@ -31,14 +32,16 @@ It would also produce output files with the prefix US (USnames.xls, UScharacters
 - jobs.py also uses python packages that must be downloaded and installed: gender_guesser BeautifulSoup
 
 ## input files:  
-- prefix+files.txt (e.g., USfiles.txt)  = a file of filenames of cast lists to be read 
+- prefix+files.txt (e.g., USfiles.txt)  = a file of filenames of cast lists to be read.
 These are local file names (which can include absolute or relative addresses) that casts.py loops through searching for names.
+Typically, they are the url of the wikipedia pages for each movie.
 
-- gendernames.json  = a json file of names and words with assigned genders
+- gendernames.json  = a json file of names and words with assigned genders.
 This file can always be improved and updated.
   
 The casts.py program is in 2 main sections:
 - it divides each line in a cast list into 3 parts: actor name / character name / & optional additional material
+	- typically: actor as character. additional material.  But there are several alternative formats in the wikipedia pages.
 - it assigns each actor's name and character's name a gender using (first) gendernames.json and if not there, gender_guesser
 	- the first word in a name that gets an assigned gender other than "unknown" determines the assigned gender
 	-	for Chinese and Korean names, the program works backwards from the end
