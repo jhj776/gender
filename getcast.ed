@@ -1,0 +1,10 @@
+/id=.Cast
+/<ul>
+1,-d
+/h2/,$d
+g/<p>/s///
+g/<\/p>/s///
+g/^<table/d
+w!
+q
+
