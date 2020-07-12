@@ -131,8 +131,8 @@ print  ('\nnamegender (names with fixed gender)= ' + str(type(namegender)) + ' N
 #
 # XXfiles.txt: list of filenames from Wikipedia cast lists that casts.py will read
 #	read list of filenames of input texts: all movies with cast lists
-infilelist= prefix + "files.txt"
-files=open(infilelist).read()
+sk_infilelist= prefix + "SKfiles.txt"
+files=open(sk_infilelist).read()
 #	files is a long string with all file names:
 #	number of files:
 textfiles=files.split('\n')
